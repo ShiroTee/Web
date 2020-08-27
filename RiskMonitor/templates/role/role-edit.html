@@ -1,0 +1,133 @@
+{% extends "content.html" %}
+
+{% block title %}编辑用户{% endblock %}
+
+{% block content %}
+<div class="ok-body">
+    <form class="layui-form layui-form-pane" lay-filter="filter">
+
+        <div class="layui-form-item">
+			<label class="layui-form-label">角色名称</label>
+			<div class="layui-input-block">
+				<input type="text" id ='role_name' name="role_name" placeholder="角色名称"  class="layui-input" lay-verify="required">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">角色备注</label>
+			<div class="layui-input-block">
+				<input type="text" name="vc_remark" placeholder="角色备注" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+
+        <div class="layui-form-item">
+			<label class="layui-form-label">角色权限</label>
+			<div class="layui-input-block">
+				<div id="permissionTree"></div>
+			</div>
+		</div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="edit">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+    var initData;
+	function initForm(data) {
+		var jsonString = JSON.stringify(data)
+		initData = JSON.parse(jsonString);
+	}
+
+
+    function getForm(initData) {
+		var role_name_lock = document.getElementById('role_name')
+        role_name_lock.value = initData.vc_role_name
+        role_name_lock.disabled= "disabled"
+
+	}
+
+
+    layui.use(['form', "tree"], function () {
+		let form = layui.form;
+		let tree = layui.tree;
+
+
+		$.ajax({
+                 type:'POST',
+                 // 通过url调用视图函数
+                 url:'./tree',
+                 // async:true 异步请求 此时不修改全局变量
+                 async:true,
+                 cache:false,
+                 dataType:'json',
+                 // 返回成功, 执行函数
+                 success:function(res){
+ 						tree.render({
+								elem: "#permissionTree",
+								// data: okMock.permission.list,
+								data: res.data,
+								id: 'roletree',
+								showLine: false,
+								showCheckbox: true
+							});
+
+						$.ajax({
+							 type:'POST',
+							 // 通过url调用视图函数
+							 url:'./initialize',
+							 // async:true 异步请求 此时不修改全局变量
+							 async:true,
+							 cache:false,
+							 data:{
+								'role_id': initData.l_role_id,
+								},
+							 dataType:'json',
+							 // 返回成功, 执行函数
+							 success:function(res){
+									var menu_id_lst = res.data[0]['menu_id'];
+									tree.setChecked('roletree', menu_id_lst);
+								 }
+							 });
+
+                     }
+                 })
+
+
+		form.on('submit(edit)', function (data) {
+			var checkData = tree.getChecked('roletree');
+			console.log(checkData);
+			$.ajax({
+                 type:'POST',
+                 // 通过url调用视图函数
+                 url:'./update',
+                 // async:true 异步请求 此时不修改全局变量
+                 async:true,
+                 cache:false,
+                 data:{
+                 'role_id': initData.l_role_id,
+                 'checkData': JSON.stringify(checkData)
+                 },
+                 traditional: true,
+                 dataType:'json',
+                 // 返回成功, 执行函数
+                 success:function(res){
+                     }
+                 });
+
+			layer.msg("编辑成功！", {icon: 6, time: 1000, anim: 4}, function () {
+				parent.layer.close(parent.layer.getFrameIndex(window.name));
+			});
+			return false;
+		});
+
+	})
+</script>
+{% endblock %}
