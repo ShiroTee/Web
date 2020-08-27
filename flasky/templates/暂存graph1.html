@@ -1,0 +1,40 @@
+
+@main.route('/correct/graph1/get_interval')
+def get_interval():
+    start = request.values.get('start', 0)
+    end = request.values.get('end', 0)
+    code_lst = json.loads(request.values.get('code_lst'))
+
+    for i in range(len(code_lst)):
+        code_lst[i] = '\'' + code_lst[i] + '\''
+    code_str = ','.join(code_lst)
+
+    sqli = '''SELECT 日期,组合代码,组合累计收益率 FROM [riskgroup].[dbo].[RISK_组合业绩表] where 组合代码 in (%s) and 日期 >= '%s' and 日期 <= '%s' order by 日期 asc''' % (
+        code_str, start, end)
+
+    portfolio_return_df = pd.read_sql(sqli, conn)
+    code = portfolio_return_df['组合代码'].unique()
+
+
+    res_dict = {}
+    res_dict['start'] = [start]
+    res_dict['end'] = [end]
+    res_dict['date'] = list(portfolio_return_df['日期'])
+
+    for i in range(len(res_dict['date'])):
+        res_dict['date'][i] = res_dict['date'][i][:4] + '-' + res_dict['date'][i][4:6] + '-' + res_dict['date'][i][6:]
+    portfolio_return_df['日期'] = pd.DataFrame(res_dict['date'])
+
+    for i in range(len(code)):
+        tmp = portfolio_return_df[portfolio_return_df['组合代码'] == code[i]][['日期', '组合累计收益率']].values.tolist()
+        if len(tmp) <= 1:
+            tmp = []
+        else:
+            tmp_first = tmp[0][1]
+            for j in range(len(tmp)):
+                tmp[j][1] = round((1 + tmp[j][1]) / (1 + tmp_first) - 1, 4)
+
+        res_dict[code[i]] = tmp
+
+
+    return Response(json.dumps(res_dict, ensure_ascii=False), content_type='application/json')

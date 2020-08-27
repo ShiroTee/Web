@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="app-content">
+      <div class="app-title">
+        <div>
+          <h3>
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">YYRating</a>
+                  <div class="dropdown-menu"><a class="dropdown-item" href="/correct">基础数据</a><a class="dropdown-item" href="/correct/graph1">Graph1</a><a class="dropdown-item" href="/correct/graph2">Graph2</a>
+                    <div class="dropdown-divider"></div><a class="dropdown-item" href="#">Separated link</a></h3>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+          <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+          <li class="breadcrumb-item">YYRating</li>
+        </ul>
+      </div>
+      <table id="demo" lay-filter="test"></table>
+
+<script src="{{ url_for('static', filename='layui/layui.js') }}"></script>
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+
+  //第一个实例
+  table.render({
+    elem: '#demo'
+    ,height: 610
+    ,url: '/correct/YYRating' //数据接口
+    ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+      layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']
+      ,groups: 5
+      ,theme: '#1E9FFF'
+    }//开启分页
+    ,limits: [20,50,100]  //一页选择显示3,5或10条数据
+    ,limit: 20  //一页显示10条数据
+    ,cols: [[ //表头
+    {field: '成交日期', title: '成交日期', width:110, sort: true, fixed: 'left'}
+      ,{field: '债券简称', title: '债券简称', width:150}
+      ,{field: '发行人', title: '发行人', width:240}
+      ,{field: '剩余期限', title: '剩余期限', width:100}
+      ,{field: '成交价', title: '成交价', width: 100, sort: true}
+      ,{field: '收益率', title: '收益率', width: 90, sort: true}
+      ,{field: '成交量', title: '成交量', width: 90, sort: true}
+      ,{field: '成交额', title: '成交额', width: 90, sort: true}
+      ,{field: 'YY等级', title: 'YY等级', width: 95, sort: true}
+      ,{field: '成交隐含', title: '成交隐含', width: 105, sort: true}
+      ,{field: 'YY偏离', title: 'YY偏离', width: 100, sort: true}
+      ,{field: '偏离', title: '偏离', width: 85, sort: true}
+      ,{field: '是否汇总', title: '是否汇总', width: 90}
+      ,{field: '债券类型', title: '债券类型', width: 120}
+      ,{field: '发行方式', title: '发行方式', width: 100}
+      ,{field: '数据来源', title: '数据来源', width: 140}
+      ,{field: '交易市场', title: '交易市场', width: 120}
+      ,{field: '主体类型', title: '主题类型', width: 95}
+      ,{field: '债券代码', title: '债券代码', width: 135}
+    ]]
+    ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据，res为从url中get到的数据
+                var result;
+                console.log(this);
+                console.log(JSON.stringify(res));
+                if(this.page.curr){
+                    result = res.data.slice(this.limit*(this.page.curr-1),this.limit*this.page.curr);
+                }
+                else{
+                    result=res.data.slice(0,this.limit);
+                }
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.count, //解析数据长度
+                    "data": result //解析数据列表
+                };
+            }
+  });
+
+});
+</script>
+</main>
+
+{% endblock %}

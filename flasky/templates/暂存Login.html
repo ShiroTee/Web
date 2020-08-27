@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky - Login{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Login</h1>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+    <br>
+</div>
+{% endblock %}
+
+,{field: '成交隐含', title: '成交隐含', width: 135, sort: true}
+      ,{field: 'YY偏离', title: 'YY偏离', width: 135, sort: true}
+      ,{field: '偏离', title: '偏离', width: 135, sort: true}
+      ,{field: '是否汇总', title: '是否汇总', width: 135}
+      ,{field: '债券类型', title: '债券类型', width: 135}
+      ,{field: '发行方式', title: '发行方式', width: 135}
+      ,{field: '数据来源', title: '数据来源', width: 135}
+      ,{field: '交易市场', title: '交易市场', width: 135}
+      ,{field: '主体类型', title: '主题类型', width: 135}
+      ,{field: '债券代码', title: '债券代码', width: 135}
+      ,{field: '入库时间', title: '入库时间', width: 135}

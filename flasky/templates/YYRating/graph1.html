@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h3>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                   aria-expanded="false">YYRating</a>
+                <div class="dropdown-menu"><a class="dropdown-item" href="/correct">基础数据</a><a class="dropdown-item"
+                                                                                               href="/correct/graph1">Graph1</a><a
+                        class="dropdown-item" href="/correct/graph2">Graph2</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Separated link</a>
+            </h3>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+            <li class="breadcrumb-item">YYRating</li>
+        </ul>
+    </div>
+
+
+    <div class="row">
+
+
+        <div class="col-md-12">
+            <div class="tile">
+                <h3 class="tile-title">组合业绩表</h3>
+
+
+                <D class="layui-form" action="" >
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline" style="padding-left: 200px;">
+                            <label class="layui-form-label">起止日期</label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="start" id="start_date1" placeholder="开始日期" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">至</div>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="end" id="end_date1" placeholder="结束日期" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+
+
+                            <label class="layui-form-label">组合代码</label>
+                            <div class="layui-input-inline" id='code_lst1' style="width: 245px;">
+
+                            </div>
+
+                            <button class="layui-btn" id="btn-code1" lay-submit lay-filter="formDemo1">提交</button>
+                            <button class="layui-btn" href="" type='button' onclick="document.location.reload();"
+                                    id="btn-reset1" >重置
+                            </button>
+
+                        </div>
+
+
+                    </div>
+                </D>
+
+                <div id="portfolio_graph1" style="width: 1200px;height:400px;"></div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-12">
+            <div class="tile">
+                <h3 class="tile-title">组合基准对比表</h3>
+                <D class="layui-form" action="">
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline" style="padding-left: 60px;">
+                            <label class="layui-form-label">起止日期</label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="start" id="start_date2" placeholder="开始日期" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">至</div>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="end" id="end_date2" placeholder="结束日期" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+
+
+                            <label class="layui-form-label">组合代码</label>
+                            <div class="layui-input-inline" id='code_lst2' style="width: 85px;">
+
+                            </div>
+
+                            <label class="layui-form-label">基准代码</label>
+                            <div class="layui-input-inline" id='index_lst1' style="width: 250px;">
+
+                            </div>
+
+                            <button class="layui-btn" id="btn-code2" lay-submit lay-filter="formDemo2">提交</button>
+                            <button class="layui-btn" href="" type='button' onclick="document.location.reload();"
+                                    id="btn-reset2" >重置
+                            </button>
+
+                        </div>
+
+
+                    </div>
+                </D>
+
+                <div id="portfolio_graph2" style="width: 1200px;height:400px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script>
+        // 通过xmSelect.render声明多选框
+    var code_lst1 = xmSelect.render({
+        // 找到id为code_lst1的位置
+        el: '#code_lst1',
+        size: 'large',
+        filterable: true,   // 搜索
+        paging: true,       // 分页
+        pageSize: 5,        // 每页5个
+        searchTips: '最多选择3个组合',
+        toolbar: {          // 全选, 清空
+            show: true,
+            showIcon: false,
+        },
+        data: []
+    })
+
+
+    // 异步加载数据
+    $.ajax({
+            type:'get',
+             url:'/correct/graph1/get_code_lst',
+             async:false,
+             cache:false,
+             dataType:'json',
+             success:function(response){
+                  // 将返回的值赋值给code_lst1.data
+                  var res = response.data;
+
+                    code_lst1.update({
+                        data: res,
+                        autoRow: true,
+                    });
+                   }
+             });
+
+
+    // 通过xmSelect.render声明多选框
+    var index_lst1 = xmSelect.render({
+        // 找到id为index_lst1的位置
+        el: '#index_lst1',
+        size: 'large',
+        filterable: true,   // 搜索
+        paging: true,       // 分页
+        pageSize: 5,        // 每页5个
+        autoRow: false,
+        model: {
+		label: {
+			type: 'block',
+			block: {
+				//最大显示数量, 0:不限制
+				showCount: 1,
+				//是否显示删除图标
+				showIcon: true,
+                }
+            }
+        },
+        searchTips: '请先选择日期和组合',
+        toolbar: {          // 全选, 清空
+            show: true,
+            showIcon: false,
+        },
+        data: []
+    })
+
+
+    var code_lst2 = xmSelect.render({
+        // 找到id为code_lst2的位置
+        el: '#code_lst2',
+        size: 'large',
+        radio: true,
+        clickClose: true,
+        filterable: true,   // 搜索
+        paging: true,       // 分页
+        pageSize: 5,        // 每页5个
+        searchTips: '只能选择1个组合',
+        model: {
+            label: {
+                type: 'text',
+                text: {
+                    //左边拼接的字符
+                    left: '',
+                    //右边拼接的字符
+                    right: '',
+                    //中间的分隔符
+                    separator: ', ',
+                },
+            }
+        },
+        toolbar: {          // 全选, 清空
+            show: true,
+            showIcon: false,
+        },
+        on: function(data){
+                // ajax获得start,end值
+                var start = $('#start_date2').val();
+                var end = $('#end_date2').val();
+                // 考虑code是否为空
+                var code = data.arr;
+                code = (code[0] || {}).name;
+
+                if (start && end && code){
+                                $.ajax({
+                                     type:'get',
+                                     url:'/correct/graph1/get_index',
+                                     async:false,
+                                     cache:false,
+                                     data:{
+                                       'code': code,
+                                       'end': end
+                                      },
+                                     dataType:'json',
+                                     success:function(response){
+                                          var res = response.data;
+
+                                          index_lst1.update({
+                                                data: res,
+                                                autoRow: true,
+                                            });
+                                           }
+                                     });
+                              }
+                else{index_lst1.update({
+                                                data: [],
+                                                autoRow: true,
+                                            });}
+	    },
+        data: []
+    })
+
+
+    // 异步加载数据
+    $.ajax({
+            type:'get',
+             url:'/correct/graph1/get_code_lst',
+             async:true,
+             cache:false,
+             dataType:'json',
+             success:function(response){
+                  // 将返回的值赋值给code_lst2.data
+                  var res = response.data;
+
+                    code_lst2.update({
+                        data: res,
+                        autoRow: true,
+                    });
+                   }
+             });
+    </script>
+
+</main>
+
+{% endblock %}

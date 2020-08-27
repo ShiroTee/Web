@@ -1,0 +1,260 @@
+@main.route('/correct/graph1/get_start_end_index')
+def get_start_end():
+    # 得到前端传回的参数
+    start = request.values.get('start', 0)
+    end = request.values.get('end', 0)
+    code = request.values.get('code', 0)
+    index_lst = json.loads(request.values.get('index_lst'))
+
+    # 先计算组合
+    sqli1 = '''SELECT 日期,组合代码,组合累计收益率 FROM [riskgroup].[dbo].[RISK_组合业绩表] where 组合代码 ='%s' and 日期 >= '%s' and 日期 <= '%s' order by 日期 asc''' % (
+        code, start, end)
+    portfolio_return_df = pd.read_sql(sqli1, conn)
+
+    res_dict = {}
+    res_dict['start'] = [start]
+    res_dict['end'] = [end]
+    res_dict['date'] = list(portfolio_return_df['日期'])
+
+    # 日期转换为 年/月/日
+    for i in range(len(res_dict['date'])):
+        res_dict['date'][i] = res_dict['date'][i][:4] + '-' + res_dict['date'][i][4:6] + '-' + res_dict['date'][i][6:]
+    portfolio_return_df['日期'] = pd.DataFrame(res_dict['date'])
+
+    # 计算组合区间收益率
+    tmp = portfolio_return_df[['日期', '组合累计收益率']].values.tolist()
+    if len(tmp) <= 1:
+        tmp = []
+    else:
+        tmp_first = tmp[0][1]
+        for j in range(len(tmp)):
+            tmp[j][1] = round((1 + tmp[j][1]) / (1 + tmp_first) - 1, 4)
+    res_dict[code] = tmp
+
+    # 再计算基准
+
+    # 计算基准区间收益率
+
+    # 传回前端的数据需要json化再转换为Response
+    return Response(json.dumps(res_dict, ensure_ascii=False), content_type='application/json')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+formatter:function (value, index) {
+    return (value*100).toFixed(2)+'%';
+}
+
+
+
+
+@main.route('/correct/graph1/test5', methods=['GET','POST'])
+def testtest222():
+    startTime = request.values.get('startTime', 0)
+    endTime = request.values.get('endTime', 0)
+
+    sqli = '''SELECT 日期,组合代码,组合累计收益率 FROM [riskgroup].[dbo].[RISK_组合业绩表] where 日期 >= '%s' and 日期 <= '%s' order by 日期 asc''' % (startTime, endTime)
+
+    portfolio_return_df = pd.read_sql(sqli, conn)
+    Z031 = portfolio_return_df[portfolio_return_df['组合代码'] == 'Z031'][['日期','组合累计收益率']].values.tolist()
+    Z054 = portfolio_return_df[portfolio_return_df['组合代码'] == 'Z054'][['日期','组合累计收益率']].values.tolist()
+
+    Z031_first = Z031[0]
+    for i in range(len(Z031)):
+        Z031[i] = (1 + Z031[i])/(1 + Z031_first) - 1
+
+    Z054_first = Z054[0]
+    for i in range(len(Z054)):
+        Z054[i] = (1 + Z054[i]) / (1 + Z054_first) - 1
+
+
+
+
+    res_dict = {}
+    res_dict['start'] = [startTime]
+    res_dict['end'] = [endTime]
+    res_dict['date'] = list(portfolio_return_df['日期'])
+
+    for i in range(len(res_dict['date'])):
+        res_dict['date'][i] = res_dict['date'][i][:4] + '-' + res_dict['date'][i][4:6] + '-' + res_dict['date'][i][6:]
+    portfolio_return_df['日期'] = pd.DataFrame(res_dict['date'])
+
+    data = portfolio_return_df[portfolio_return_df['组合代码'] == 'Z031'][['日期', '组合累计收益率']].values.tolist()
+    data2 = portfolio_return_df[portfolio_return_df['组合代码'] == 'Z054'][['日期', '组合累计收益率']].values.tolist()
+
+
+    res_dict['Z031'] = data
+    res_dict['Z054'] = data2
+
+
+    return Response(json.dumps(res_dict, ensure_ascii=False), content_type='application/json')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+test1 = res.start
+test2 = res.end
+test3 = res.date
+console.log(test1)
+console.log(test2)
+console.log(test3)
+
+
+
+
+
+
+
+
+
+myChart.setOption({
+                xAxis: {
+                        data: res.xlab
+                                    },
+                series: [{
+                               data: res.Z031
+                           },
+                        {
+                            data: res.Z054
+                        }]
+          });
+          console.log(res.start);
+          console.log(res.end);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+startTime = request.values.get('startTime', 0)
+    endTime = request.values.get('endTime', 0)
+
+    sqli = '''SELECT 日期,组合代码,组合累计收益率 FROM [riskgroup].[dbo].[RISK_组合业绩表] where 日期 >= '%s' and 日期 <= '%s' order by 日期 asc '''%(
+        startTime, endTime)
+    portfolio_return_df = pd.read_sql(sqli, conn)
+
+    dic = {
+    'start': [startTime, startTime+'abc'],
+    'end': [endTime]
+    }
+    return Response(json.dumps(dic, ensure_ascii=False), content_type='application/json')
+
+
+
+
+
+
+
+
+
+
+
+startTime = request.values.get('startTime', 0)
+    endTime = request.values.get('endTime', 0)
+
+    startTime = re.sub('\D', '', startTime)
+    endTime = re.sub('\D', '', endTime)
+    sqli = '''SELECT 日期,组合代码,组合累计收益率 FROM [riskgroup].[dbo].[RISK_组合业绩表] where 日期 >= '%s' and 日期 <= '%s' order by 日期 asc ''' % (
+        startTime, endTime)
+    portfolio_return_df = pd.read_sql(sqli, conn)
+
+    res_dict = {}
+    res_dict['date'] = list(portfolio_return_df['日期'])
+
+    for i in range(len(res_dict['date'])):
+        res_dict['date'][i] = res_dict['date'][i][:4] + '-' + res_dict['date'][i][4:6] + '-' + res_dict['date'][i][6:]
+    portfolio_return_df['日期'] = pd.DataFrame(res_dict['date'])
+
+    data = portfolio_return_df[portfolio_return_df['组合代码'] == 'Z031'][['日期', '组合累计收益率']].values.tolist()
+    data2 = portfolio_return_df[portfolio_return_df['组合代码'] == 'Z054'][['日期', '组合累计收益率']].values.tolist()
+
+    res_dict['Z031'] = data
+    res_dict['Z054'] = data2
+
+    start = res_dict['date'][0]
+    end = res_dict['date'][-1]
+    xlab = []
+    cur_date = start
+    while cur_date <= end:
+        xlab.append(cur_date)
+        cur_date = datetime.datetime.strftime(
+            datetime.datetime.strptime(cur_date, '%Y-%m-%d') + datetime.timedelta(days=1), '%Y-%m-%d')
+    res_dict['xlab'] = xlab
+
+    return Response(json.dumps(res_dict, ensure_ascii=False), content_type='application/json')
+
+
+
+
+
+
+
+
+

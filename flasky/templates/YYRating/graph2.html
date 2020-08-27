@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h3>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                   aria-expanded="false">YYRating</a>
+                <div class="dropdown-menu"><a class="dropdown-item" href="/correct">基础数据</a><a class="dropdown-item"
+                                                                                               href="/correct/graph1">Graph1</a><a
+                        class="dropdown-item" href="/correct/graph2">Graph2</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Separated link</a>
+            </h3>
+        </div>
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+            <li class="breadcrumb-item">YYRating</li>
+        </ul>
+    </div>
+
+
+    <div class="row">
+
+
+        <div class="col-md-12">
+            <div class="tile">
+                <h3 class="tile-title">组合业绩表</h3>
+
+
+                <D class="layui-form" action="">
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">起止日期</label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="start" id="start_date" placeholder="开始日期" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">至</div>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="end" id="end_date" placeholder="结束日期" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+
+                        </div>
+
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">组合代码</label>
+                            <div class="layui-input-inline" id='demo1' style="width: 245px;">
+
+                            </div>
+
+                            <button class="layui-btn" id="btn-code" lay-submit lay-filter="formDemo">提交</button>
+                            <button class="layui-btn" href="" type='button' onclick="document.location.reload();"
+                                    id="btn-reset" lay-submit lay-filter="formDemo2">重置
+                            </button>
+
+                        </div>
+
+
+                    </div>
+                </D>
+
+                <div id="graph_test2" style="width: 1200px;height:400px;"></div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-12">
+            <div class="tile">
+                <h3 class="tile-title">Line Chart</h3>
+                <div id="graph_test1" style="width: 1200px;height:400px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+
+    layui.use('laydate', function(){
+      var laydate = layui.laydate;
+
+      //执行一个laydate实例
+      laydate.render({
+        elem: '#start_date' //指定元素
+      });
+
+      laydate.render({
+        elem: '#end_date' //指定元素
+      });
+    });
+
+
+    // 通过xmSelect.render声明多选框
+    var demo1 = xmSelect.render({
+        // 找到id为demo1的位置
+        el: '#demo1',
+        size: 'large',
+        filterable: true,   // 搜索
+        paging: true,       // 分页
+        pageSize: 5,        // 每页5个
+        searchTips: '最多选择3个组合',
+        toolbar: {          // 全选, 清空
+            show: true,
+            showIcon: false,
+        },
+        data: []
+    })
+
+
+    // 异步加载数据
+    $.ajax({
+            type:'get',
+             url:'/correct/graph1/get_code_lst',
+             async:false,
+             cache:false,
+             dataType:'json',
+             success:function(response){
+                  // 将返回的值赋值给demo1.data
+                  var res = response.data;
+
+                    demo1.update({
+                        data: res,
+                        autoRow: true,
+                    });
+                   }
+             });
+
+    </script>
+
+
+    <script>
+
+
+
+
+    </script>
+
+
+
+</main>
+
+{% endblock %}

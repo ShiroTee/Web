@@ -1,0 +1,4 @@
+2020-07-29 10:35:08,016 - YYRating_new.py[line:459] - INFO: msdb_main连接成功
+2020-07-29 10:36:29,283 - utils.py[line:141] - INFO: NumExpr defaulting to 6 threads.
+2020-07-29 10:36:29,310 - YYRating_new.py[line:210] - INFO: From 2020-01-27 to 2020-02-26 Issuer 北京市基础设施投资有限公司 has 57 data. 数据大于0小于100
+2020-07-29 10:36:55,799 - YYRating_new.py[line:210] - INFO: From 2020-01-27 to 2020-02-26 Issuer 长城国兴金融租赁有限公司 has 3 data. 数据大于0小于100
