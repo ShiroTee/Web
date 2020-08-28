@@ -1,8 +1,0 @@
-/.idea/
-*/__pycache__
-*.pyc 
-!index.pyc
-/target/
-/__pycache__/
-/logs/
-/venv/
