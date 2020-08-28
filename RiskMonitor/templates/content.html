@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/animate/animate.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/okadmin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/layui/css/layui.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/tableFilter/tableFilter.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/layui/lay/okmodules/treetable/treetable.css') }}" >
+    <script src="{{ url_for('static', filename='plugins/layui/layui.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/echarts/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/jQuery/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/xm-select/dist/xm-select.js') }}"></script>
+
+
+</head>
+<body>
+{% block content %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+<script>
+    layui.config({
+            base: '/static/plugins/tableFilter/'      //自定义layui组件的目录
+        }).extend({ //设定组件别名
+            tableFilter:   'tableFilter',
+    });
+
+</script>
+</body>
+</html>
+

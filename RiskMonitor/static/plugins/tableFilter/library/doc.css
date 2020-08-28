@@ -1,0 +1,14 @@
+.layui-field-title {margin-top:20px;}
+
+.doc-layout {position:absolute;top:0px;left:0px;right:0px;bottom:0px;}
+.doc-side {position:absolute;top:0px;left:0px;bottom:0px;border-right:1px solid #e2e2e2;width:200px;background:#f5f5f5}
+.doc-content {position:absolute;top:0px;left:200px;right:0px;bottom:0px;padding:15px;overflow:auto;}
+.doc-h1 {font-size: 30px;padding:15px 0;font-weight: 300;color:#333;}
+
+.doc-side h1 {font-size:18px;color:#333;border-bottom:1px solid #e2e2e2;padding:15px;}
+.doc-side h2 {padding:15px 15px 5px 15px;color:#999;font-size:12px;}
+.doc-side li {height:30px;line-height:30px;}
+.doc-side li a {padding:0 15px;}
+
+.doc-content .layui-main {width: 899px;}
+

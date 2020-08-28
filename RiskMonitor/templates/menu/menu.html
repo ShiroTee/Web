@@ -1,0 +1,140 @@
+{% extends "content.html" %}
+
+{% block title %}用户列表{% endblock %}
+
+{% block content %}
+<div class="ok-body">
+
+    <!--数据表格-->
+    <table class="layui-hide" id="menutable" lay-filter="tableFilter"></table>
+
+
+    {% endblock %}
+
+    {% block scripts %}
+
+    <script>
+    layui.use(["element", "table", "form", "laydate", "treetable", "okLayer", "okUtils"], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var $ = layui.jquery;
+        var laydate = layui.laydate;
+        var treetable = layui.treetable;
+		var okLayer = layui.okLayer;
+		var okUtils = layui.okUtils;
+
+         treetable.render({
+            treeColIndex: 1,
+            treeSpid: 0,
+            treeIdName: "l_menu_id",
+            treePidName: "l_parent_id",
+            elem: "#menutable",
+            url: "./getindex",
+            toolbar: "#toolbarTpl",
+            width: 1000,
+            page: false,
+            cols: [[
+                {field: "l_menu_id", title:"菜单ID", width: 90, sort:true},
+                {field: "vc_menu_name", width: 200, title: "菜单名称"},
+                {field: "l_parent_id", title: "父菜单ID", width: 100},
+                {field: "vc_url", title: "路由",minWidth:200},
+                {
+                    field: "isleaf", width: 80, align: "center", templet: function (d) {
+                        if (d.isleaf == 1) {
+                            return '<span class="layui-badge layui-bg-gray">菜单</span>';
+                        }
+                        if (d.l_parent_id == 0) {
+                            return '<span class="layui-badge layui-bg-blue">目录</span>';
+                        } else {
+                            return '<span class="layui-badge-rim">目录</span>';
+                        }
+                    },
+                    title: "类型"
+                },
+                {width: 120, align: "center", title: "操作", templet: "#operationTpl", width:100}
+            ]],
+            done: function (res, curr, count) {
+            }
+        });
+
+
+    table.on("toolbar(tableFilter)", function (obj) {
+			switch (obj.event) {
+				case "add":
+					add();
+					break;
+			}
+        });
+
+
+    function add () {
+			okLayer.open("添加用户", "./menu-add", "60%", "90%", null, function () {
+               window.location.replace("http://127.0.0.1:5050/risk/menu/index");
+			})
+		}
+
+
+    table.on("tool(tableFilter)", function (obj) {
+            var data = obj.data;
+			switch (obj.event) {
+			    case "edit":
+					edit(data);
+					break;
+				case "del":
+					del(data);
+					break;
+			}
+        });
+
+    function edit (data) {
+			okLayer.open("编辑菜单", "./menu-edit", "60%", "90%", function (layero) {
+                var iframeWin = window[layero.find('iframe')[0]['name']];
+                iframeWin.initForm(data);
+                iframeWin.getForm(iframeWin.initData);
+
+			}, function () {
+				window.location.replace("http://127.0.0.1:5050/risk/menu/index");
+			})
+		}
+
+	function del (data) {
+			okLayer.confirm("确定要删除吗？", function () {
+
+                $.ajax({
+                 type:'POST',
+                 // 通过url调用视图函数
+                 url:'./delete',
+                 // async:true 异步请求 此时不修改全局变量
+                 async:true,
+                 cache:false,
+                 data:{
+                 'menu_id': data.l_menu_id,
+                 },
+                 dataType:'json',
+                 // 返回成功, 执行函数
+                 success:function(res){
+                      okLayer.msg.greenTick("删除成功", function () {
+                            window.location.replace("http://127.0.0.1:5050/risk/menu/index");
+                        });
+                     }
+                 });
+			})
+		}
+
+    })
+
+
+    </script>
+    <!-- 头工具栏模板 -->
+    <script type="text/html" id="toolbarTpl">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>添加菜单</button>
+        </div>
+    </script>
+
+    <!--行工具栏模板-->
+    <script type="text/html" id="operationTpl">
+        <a href="javascript:;" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+        <a href="javascript:;" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+    </script>
+    {% endblock %}

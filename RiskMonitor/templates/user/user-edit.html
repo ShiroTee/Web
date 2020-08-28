@@ -1,0 +1,197 @@
+{% extends "content.html" %}
+
+{% block title %}编辑用户{% endblock %}
+
+{% block content %}
+<div class="ok-body">
+    <form class="layui-form layui-form-pane" lay-filter="filter">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录ID</label>
+            <div class="layui-input-block">
+                <input type="text" id='login_id' name="login_id" placeholder="请输入登录ID" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="user_name" placeholder="请输入用户名" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="emails" placeholder="请输入邮箱" autocomplete="off" class="layui-input" lay-verify="email">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" placeholder="请输入电话" autocomplete="off" class="layui-input" lay-verify="phone">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <div id="status" class="xm-select-demo"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-block">
+                <div id="access-control" class="xm-select-demo"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="edit">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+    var ac = xmSelect.render({
+        el: '#access-control',
+        radio: true,
+        data: [
+            {name: '超级管理员', value: 1},
+            {name: '管理员', value: 2},
+            {name: '一般用户', value: 3},
+        ]
+    })
+
+    var status_xS = xmSelect.render({
+        el: '#status',
+        radio: true,
+        data: [
+            {name: '正常', value: 0},
+            {name: '冻结', value: 1}
+        ]
+    })
+
+    var initData;
+	function initForm(data) {
+		var jsonString = JSON.stringify(data)
+		initData = JSON.parse(jsonString);
+	}
+
+	function getForm(initData) {
+		layui.use(["form", "okLayer"], function () {
+        var form = layui.form;
+		var okLayer = layui.okLayer;
+
+		//form.val("filter", initData);
+                    var login_id = initData.vc_login_id;
+                    var user_name = initData.vc_user_name;
+                    var emails = initData.vc_emails;
+                    var phone = initData.vc_phone;
+                    var status = initData.c_status;
+                    var status_code;
+                    console.log(status);
+                    if(status == '正常'){
+                        status_code==0;
+                        status_xS.setValue([
+                        {name: status, value: status_code}])
+                    }
+                    else if(status == '冻结'){
+                        status_code==1;
+                        status_xS.setValue([
+                        {name: status, value: status_code}])
+                    }
+                    else if(status == '注销'){
+                        status_code==2;
+                        status_xS.setValue([])
+                    }
+
+                    obj = { login_id: login_id,
+                            user_name: user_name,
+                            emails: emails,
+                            phone: phone,
+                            status: status
+                    };
+                    console.log(obj);
+                    form.val("filter", JSON.parse(JSON.stringify(obj)));
+        var login_id_lock = document.getElementById('login_id')
+        login_id_lock.value = login_id
+        login_id_lock.disabled= "disabled"
+        })
+
+	}
+
+
+    layui.use(["form", "okLayer"], function () {
+        var form = layui.form;
+		var okLayer = layui.okLayer;
+
+
+        form.on("submit(edit)", function (res) {
+            var user_id = initData.l_user_id
+            var login_id = res.field.login_id
+            var user_name = res.field.user_name
+            var emails = res.field.emails
+            var phone = res.field.phone
+
+            var status = xmSelect.get('#status', true);
+            status = status.getValue('name')[0];
+            var status_code
+
+            if(status=='正常'){
+                status_code = 0;
+            }
+            else if(status=='冻结'){
+                status_code = 1;
+            }
+            else if(status=='注销'){
+                status_code = 2;
+            }
+
+
+
+            $.ajax({
+                 type:'POST',
+                 // 通过url调用视图函数
+                 url:'./update',
+                 // async:true 异步请求 此时不修改全局变量
+                 async:true,
+                 cache:false,
+                 data:{
+                 'user_id': user_id,
+                 'login_id': login_id,
+                 'user_name': user_name,
+                 'emails': emails,
+                 'phone': phone,
+                 'status': status_code
+                 },
+                 dataType:'json',
+                 // 返回成功, 执行函数
+                 success:function(res){
+                      okLayer.msg.greenTick("编辑成功", function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        });
+                     }
+                 });
+
+
+            return false;
+        });
+
+
+    })
+
+
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "content.html" %}
+
+{% block title %}编辑用户{% endblock %}
+
+{% block content %}
+<div class="ok-body">
+    <form class="layui-form layui-form-pane" lay-filter="filter">
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password1" placeholder="请输入新密码" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password2" placeholder="请再次输入新密码" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="edit">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+    var initData;
+	function initForm(data) {
+		var jsonString = JSON.stringify(data)
+		initData = JSON.parse(jsonString);
+	}
+
+    layui.use(["form", "okLayer"], function () {
+        var form = layui.form;
+		var okLayer = layui.okLayer;
+
+        form.on("submit(edit)", function (res) {
+            var user_id = initData.l_user_id;
+            var password1 = res.field.password1
+            var password2 = res.field.password2
+
+            console.log(user_id);
+            console.log(password1);
+            console.log(password2);
+
+            if(password1 == password2){
+                $.ajax({
+                 type:'POST',
+                 // 通过url调用视图函数
+                 url:'./reset',
+                 // async:true 异步请求 此时不修改全局变量
+                 async:true,
+                 cache:false,
+                 data:{
+                 'user_id': user_id,
+                 'password': password1,
+                 },
+                 dataType:'json',
+                 // 返回成功, 执行函数
+                 success:function(res){
+                      okLayer.msg.greenTick("重设成功", function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        });
+                     }
+                 });
+            }
+            else{
+                okLayer.msg.redCross("两次密码不一致", function () {
+                        });
+            }
+
+            return false;
+            });
+
+
+        })
+
+
+
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "content.html" %}
+
+{% block title %}添加用户{% endblock %}
+
+{% block content %}
+<div class="ok-body">
+    <form class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="menu_name" placeholder="请输入菜单名称" autocomplete="off" class="layui-input"
+                       lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">父菜单ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="parent_id" placeholder="请输入父菜单ID" autocomplete="off" class="layui-input"
+                       lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">路由</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" placeholder="请输入路由" autocomplete="off" class="layui-input"
+                       lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="add">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+
+<script>
+    layui.use(["okLayer","form"], function () {
+        var form = layui.form;
+        var okLayer = layui.okLayer;
+
+        form.on("submit(add)", function (res) {
+            var menu_name = res.field.menu_name;
+            var parent_id = res.field.parent_id;
+            var url = res.field.url;
+
+            $.ajax({
+                 type:'POST',
+                 // 通过url调用视图函数
+                 url:'./insert',
+                 // async:true 异步请求 此时不修改全局变量
+                 async:true,
+                 cache:false,
+                 data:{
+                 'menu_name': menu_name,
+                 'parent_id': parent_id,
+                 'url': url
+                 },
+                 dataType:'json',
+                 // 返回成功, 执行函数
+                 success:function(res){
+                      okLayer.msg.greenTick("添加成功", function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        });
+                     }
+                 });
+
+            return false;
+        });
+
+    })
+
+</script>
+{% endblock %}
